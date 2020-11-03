@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <Header :cart="cart"/>
-        <ItemPage :items="items" :toggle-item="toggleItem"/>
+        <ItemPage :total="total" :items="items" :toggle-item="toggleItem"/>
     </div>
 </template>
 
@@ -28,6 +28,7 @@
             );
             return {
                 cart: new Cart(),
+                total: 0.0,
                 items: [
                     mainItem,
                     new Item("Java Programming", 23.0, "./images/image5.jpg"),
@@ -39,14 +40,19 @@
         },
         methods: {
             toggleItem: function(id) {
+
+                let item = this.items[id];
+
                 let index = this.cart.selected.indexOf(id);
 
                 if (index > -1) {
                     this.cart.selected.splice(index, 1);
+                    this.total -= item.price;
                     return false;
                 }
 
                 this.cart.selected.push(id);
+                this.total += item.price;
                 return true;
             }
         },

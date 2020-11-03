@@ -1,63 +1,56 @@
 <template>
-    <section>
-        <div id="item-container">
-            <div class="gallery">
-                <img id="item-main-image" :src="items[0].image">
-                <div class="thumbnails">
-                    <img v-for="(image, index) in items[0].thumbnails" :src="image" :key="index"
-                         @click="changeThumbnail(index)">
-                </div>
+    <div>
+        <div class="comment-contents">
+            <div class="comment" v-for="(comment, index) in sortedComments" :key="index">
+                <div class="commented-at">{{comment.createDate | formatDate}}</div>
+                {{comment.text}}
             </div>
-            <h1>{{items[0].title}} - {{items[0].price}}$</h1>
-            <AddToCart :index="0" :toggle-item="toggleItem"/>
-            <Comments/>
         </div>
-
-        <div class="suggested-container">
-            <h3>Total: <span id="total-price">{{total | round}}</span>$</h3>
-            <h3>Similar items</h3>
-            <ul>
-                <li v-for="(item, index) in items" :key="index">
-                    <div v-if="index !== 0">
-                        <img :src="item.image">
-                        <h4>
-                            <a href="#">{{item.title}} - {{item.price}}$</a>
-                        </h4>
-                        <AddToCart :index="index" :toggle-item="toggleItem"/>
-                    </div>
-                </li>
-            </ul>
+        <div class="comment-box">
+            <textarea rows="10" v-model="commentField" placeholder="Leave a Comment..." @keyup.enter="addComment"></textarea>
         </div>
-    </section>
+    </div>
 </template>
 
 <script>
-    import AddToCart from './AddToCart'
-    import Comments from './Comments'
+    import Comment from '../models/Comment'
 
     export default {
-        name: 'ItemPage',
-        components: {
-            AddToCart,
-            Comments
-        },
+        name: 'Comments',
         methods: {
-            changeThumbnail: function(index) {
-              this.items[0].image = this.items[0].thumbnails[index]
+          addComment: function() {
+              this.comments.push(new Comment(this.commentField, new Date()))
+              this.commentField = null
+          }
+        },
+        data: function () {
+            return {
+                commentField: null,
+                comments: []
             }
         },
-        props: {
-            items: Array,
-            toggleItem: Function,
-            total: Number
+        computed: {
+          sortedComments: function() {
+              let comments = this.comments
+
+              comments.sort((a, b) => (a.createDate < b.createDate) ? 1 : -1)
+
+              return comments
+          }
         },
         filters: {
-            round: function (value) {
-                if (!value) {
-                    return 0;
-                }
+            formatDate: function (value) {
+                if (!value) return ''
 
-                return Number.parseFloat(value).toFixed(2)
+                let date = new Date(value);
+
+                return date.getFullYear() + "-"
+                    + date.getMonth() + "-"
+                    + date.getDate() + " "
+                    + date.getHours() + ":"
+                    + date.getMinutes() + ":"
+                    + date.getSeconds()
+
             }
         }
     }
