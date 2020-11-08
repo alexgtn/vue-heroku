@@ -2,7 +2,9 @@
     <header>
         <nav>
             <div class="logo-container">
-                <img src="../assets/logo.png" alt="Booker">
+                <router-link to="/">
+                    <img src="../assets/logo.png" alt="Booker">
+                </router-link>
             </div>
             <div class="cart-container">
                 <img src="../assets/cart.png" alt="Cart">
@@ -15,8 +17,10 @@
 <script>
     export default {
         name: 'Header',
-        props: {
-            cart: Object
+        computed: {
+            cart: function () {
+                return this.$store.state.cart
+            }
         }
     }
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <button :class="{'add-to-cart' : !selected, 'remove-from-cart' : selected}" @click="selected = toggleItem(index)">
+    <button :class="{'add-to-cart' : !selected, 'remove-from-cart' : selected}" @click="toggleItem">
         <span v-if="!selected">Add to cart</span>
         <span v-if="selected">Remove from cart</span>
     </button>
@@ -8,14 +8,18 @@
 <script>
     export default {
         name: 'AddToCart',
-        data: () => {
-            return {
-                selected: false
+        computed: {
+            selected: function () {
+                return this.$store.getters.itemIsSelected(this.index)
             }
         },
         props: {
             index: Number,
-            toggleItem: Function
+        },
+        methods: {
+            toggleItem: function() {
+                this.$store.commit('toggleItem', this.index)
+            }
         }
     }
 </script>
