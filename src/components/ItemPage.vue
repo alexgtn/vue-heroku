@@ -2,14 +2,14 @@
     <section>
         <div id="item-container">
             <div class="gallery">
-                <img id="item-main-image" :src="items[0].image">
+                <img id="item-main-image" :src="mainItem.image">
                 <div class="thumbnails">
-                    <img v-for="(image, index) in items[0].thumbnails" :src="image" :key="index"
+                    <img v-for="(image, index) in mainItem.thumbnails" :src="image" :key="index"
                          @click="changeThumbnail(index)">
                 </div>
             </div>
-            <h1>{{items[0].title}} - {{items[0].price}}$</h1>
-            <AddToCart :index="0" :toggle-item="toggleItem"/>
+            <h1>{{mainItem.title}} - {{mainItem.price}}$</h1>
+            <AddToCart :index="this.id"/>
             <Comments/>
         </div>
 
@@ -17,13 +17,15 @@
             <h3>Total: <span id="total-price">{{total | round}}</span>$</h3>
             <h3>Similar items</h3>
             <ul>
-                <li v-for="(item, index) in items" :key="index">
-                    <div v-if="index !== 0">
+                <li v-for="(item, index) in suggested" :key="index">
+                    <div>
                         <img :src="item.image">
                         <h4>
-                            <a href="#">{{item.title}} - {{item.price}}$</a>
+                            <router-link :to="{ name: 'items', params: { id:  index }}">
+                                {{item.title}} - {{item.price}}$
+                            </router-link>
                         </h4>
-                        <AddToCart :index="index" :toggle-item="toggleItem"/>
+                        <AddToCart :index="index"/>
                     </div>
                 </li>
             </ul>
@@ -41,15 +43,31 @@
             AddToCart,
             Comments
         },
-        methods: {
-            changeThumbnail: function(index) {
-              this.items[0].image = this.items[0].thumbnails[index]
+        computed: {
+            id: function () {
+                return this.$route.params.id
+            },
+            mainItem: function () {
+                return this.$store.getters.getItem(this.id)
+            },
+            suggested: function () {
+                let results = {};
+                for (let i in this.$store.state.items) {
+                    if (i != this.id) {
+                        results[i] = this.$store.state.items[i]
+                    }
+                }
+                console.log(results)
+                return results
+            },
+            total: function () {
+                return this.$store.state.cart.total
             }
         },
-        props: {
-            items: Array,
-            toggleItem: Function,
-            total: Number
+        methods: {
+            changeThumbnail: function (index) {
+                this.mainItem.image = this.mainItem.thumbnails[index]
+            }
         },
         filters: {
             round: function (value) {
@@ -79,8 +97,9 @@
     section div.suggested-container {
         flex-grow: 2;
     }
+
     #item-main-image {
-      height: 400px;
+        height: 400px;
     }
 
     #item-container h1 {
@@ -181,7 +200,8 @@
         border-radius: 20px;
         margin: 10px 0;
     }
-    .comment-contents .comment .commented-at{
+
+    .comment-contents .comment .commented-at {
         font-size: 10px;
         color: #ffffff;
     }

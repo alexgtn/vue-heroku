@@ -12,7 +12,8 @@ Vue.use(VueRouter);
 Vue.use(Vuex);
 
 const routes = [
-    {path: '/', component: Home}
+    {path: '/', component: Home},
+    {path: '/items/:id', name: "items", component: ItemPage},
 ];
 
 const router = new VueRouter({routes});
@@ -48,7 +49,10 @@ const store = new Vuex.Store({
     getters: {
         itemIsSelected: (state) => (id) => {
             return state.cart.selected.indexOf(id) > -1
-        }
+        },
+        getItem: (state) => (id) => {
+            return state.items[id]
+        },
     }
 });
 
