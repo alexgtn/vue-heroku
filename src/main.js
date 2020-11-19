@@ -27,7 +27,12 @@ const store = new Vuex.Store({
             new Item("Programming in C++", 15.0, "./images/image6.jpg"),
             new Item("Programming and fundamentals of Python", 5.50, "./images/image7.jpg"),
             new Item("My first coding book", 10.90, "./images/image8.jpg")
-        ]
+        ],
+        posts: async function () {
+            const postsRes = await fetch("https://node-lab123.herokuapp.com/posts");
+            const postsJson = await postsRes.json();
+            return postsJson
+        }
     },
     mutations: {
         toggleItem: (state, id) => {

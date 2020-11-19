@@ -16,7 +16,11 @@
         },
         components: {
             Header,
+        },
+        created: function () {
+          console.log(this.$store.state.posts())
         }
+
     }
 </script>
 
